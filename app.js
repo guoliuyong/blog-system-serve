@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2022-02-08 16:57:03
- * @LastEditTime: 2022-02-24 14:34:45
+ * @LastEditTime: 2022-02-28 09:54:52
  * @LastEditors: LAPTOP-L472H14P
  * @Description: In User Settings Edit
  * @FilePath: \blog_backStageSystem\blog_serve\app.js
@@ -11,6 +11,7 @@ const app = express()
 const path = require('path')
 const router = require(path.join(__dirname, 'Routes/user.js'))
 const article = require(path.join(__dirname, 'Routes/article.js'))
+const auth = require(path.join(__dirname, 'Routes/auth.js'))
 
 var cors = require('cors')
 app.use(cors())
@@ -30,4 +31,5 @@ app.use((err, req, res, next) => {
 app.use(express.json())
 app.use('/api', router);
 app.use('/v1', article);
+app.use('/v1', auth);
 app.listen('5000', () => {})
