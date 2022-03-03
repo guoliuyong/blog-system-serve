@@ -26,11 +26,12 @@ router.get('/login', (req, res, err) => {
       if (psd) {
         const secret = 'hand'
         // 3.生成token字符串
-        const token = jsonToken.sign({ username: req.body.username, age: 30 }, secret, {
-        expiresIn: '30h',
+        const token = jsonToken.sign({ username:username }, secret, {
+        expiresIn: '1h',
          })
         res.send({
           message: '登录成功',
+          username, 
           token,
           failed: false,
         })
