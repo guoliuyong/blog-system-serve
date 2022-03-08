@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2022-02-28 09:45:33
- * @LastEditTime: 2022-03-03 20:17:04
+ * @LastEditTime: 2022-03-07 21:43:25
  * @LastEditors: LAPTOP-L472H14P
  * @Description: In User Settings Edit
  * @FilePath: \blog-system-serve\Routes\auth.js
@@ -10,6 +10,46 @@ const db = require('../Model/model')
 const express = require('express')
 const auth = express.Router()
 const jsonToken = require('jsonwebtoken')
+const multer = require('multer')
+const path = require('path')
+const file = require('fs')
+const uploadConfig = multer({
+  dest: path.join(__dirname, '../', 'public'),
+})
+const publicPath = path.join(__dirname, '../', 'public')
+auth.post('/uploadHead', uploadConfig.single('avatar'), (req, res) => {
+  const { userId } = req.body
+  file.rename(
+    req.file.path,
+    `${publicPath}/${req.file.originalname}`,
+    (err) => {
+      if (err) throw err
+      else {
+        // 文件存储成功
+        const querySql = `select * from user_info WHERE userId = '${userId}'`
+        db(querySql, (err, result)=>{
+          if (result[0].picUrl) {
+            console.log(1123);
+            // 代表已经有图片
+            const updateSql = `UPDATE user_info set picUrl = 'http://localhost:5000/${req.file.originalname}' WHERE userId = '${userId}'`;
+            db(updateSql, (err,req) =>{
+              console.log(err);
+              res.status(200).send({
+                data: "上传成功"
+              })
+            })
+          }else {
+            console.log(123);
+          }
+          // console.log(result);
+        })
+      }
+    },
+  )
+  // const insertSql = ``
+  // console.log(req.file);
+})
+
 auth.get('/self', (req, res) => {
   const token = (req.headers.authorization || '').split(' ').pop()
   const { username } = jsonToken.decode(token)
@@ -46,7 +86,16 @@ auth.get('/userlist', (req, response) => {
   })
 })
 auth.post('/update/userlist', (req, res) => {
-  const { userId, telphone, nickname, email, realname, hobby,sex ,area} = req.body;
+  const {
+    userId,
+    telphone,
+    nickname,
+    email,
+    realname,
+    hobby,
+    sex,
+    area,
+  } = req.body
   const updateSql = `
    UPDATE user_info SET
    telphone = '${telphone ? telphone : null}',
@@ -56,9 +105,9 @@ auth.post('/update/userlist', (req, res) => {
    hobby = '${hobby}',
    sex = '${sex}',
    area = '${area}'
-   WHERE userId = ${userId}`;
+   WHERE userId = ${userId}`
   db(updateSql, (err, reuslt) => {
-    console.log(err);
+    console.log(err)
     if (reuslt.affectedRows === 1) {
       res.status(200).json({
         ...req.body,
