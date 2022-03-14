@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2022-02-28 09:45:33
- * @LastEditTime: 2022-03-07 21:43:25
+ * @LastEditTime: 2022-03-14 14:32:30
  * @LastEditors: LAPTOP-L472H14P
  * @Description: In User Settings Edit
  * @FilePath: \blog-system-serve\Routes\auth.js
@@ -28,26 +28,17 @@ auth.post('/uploadHead', uploadConfig.single('avatar'), (req, res) => {
         // 文件存储成功
         const querySql = `select * from user_info WHERE userId = '${userId}'`
         db(querySql, (err, result)=>{
-          if (result[0].picUrl) {
-            console.log(1123);
-            // 代表已经有图片
-            const updateSql = `UPDATE user_info set picUrl = 'http://localhost:5000/${req.file.originalname}' WHERE userId = '${userId}'`;
-            db(updateSql, (err,req) =>{
-              console.log(err);
-              res.status(200).send({
-                data: "上传成功"
-              })
+          const updateSql = `UPDATE user_info set picUrl = 'http://localhost:5000/${req.file.originalname}' WHERE userId = '${userId}'`;
+          db(updateSql, (err,req) =>{
+            console.log(err);
+            res.status(200).send({
+              data: "上传成功"
             })
-          }else {
-            console.log(123);
-          }
-          // console.log(result);
+          })
         })
       }
     },
   )
-  // const insertSql = ``
-  // console.log(req.file);
 })
 
 auth.get('/self', (req, res) => {
